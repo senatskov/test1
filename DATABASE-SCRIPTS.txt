@@ -1,0 +1,46 @@
+--Used RDMS  PostgreSQL 9.5
+
+
+CREATE DATABASE evotor_test
+  WITH OWNER = postgres
+       ENCODING = 'UTF8'
+       TABLESPACE = pg_default
+       LC_COLLATE = 'Russian_Russia.1251'
+       LC_CTYPE = 'Russian_Russia.1251'
+       CONNECTION LIMIT = -1;
+
+
+
+CREATE SCHEMA public
+  AUTHORIZATION postgres;
+
+GRANT ALL ON SCHEMA public TO postgres;
+GRANT ALL ON SCHEMA public TO public;
+COMMENT ON SCHEMA public
+  IS 'standard public schema';
+
+
+
+CREATE TABLE public.users
+(
+  id integer NOT NULL DEFAULT nextval('users_id_seq'::regclass),
+  login character varying(100) NOT NULL,
+  password character varying(100) NOT NULL,
+  balance numeric(20,2) NOT NULL DEFAULT 0,
+  CONSTRAINT users_pkey PRIMARY KEY (id),
+  CONSTRAINT users_login_key UNIQUE (login)
+)
+WITH (
+  OIDS=FALSE
+);
+ALTER TABLE public.users
+  OWNER TO postgres;
+
+-- Index: public.users_login_idx
+
+-- DROP INDEX public.users_login_idx;
+
+CREATE INDEX users_login_idx
+  ON public.users
+  USING btree
+  (login COLLATE pg_catalog."default");
